@@ -1,0 +1,33 @@
+{
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "files.exclude": {
+        "**/.*": true,
+        "**/*.lock": true,
+        "LICENSE": true,
+        "analysis_options.yaml": true,
+        "dictionary.txt": true
+    },
+    "dart.lineLength": 80,
+    "[dart]": {
+        "editor.formatOnPaste": true,
+        "editor.selectionHighlight": false,
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+        },
+        "files.insertFinalNewline": true
+    },
+    "yaml.format.singleQuote": true,
+    "cSpell.enabled": true,
+    "cSpell.customDictionaries": {
+        "project-words": {
+            "name": "Project words",
+            "path": "${workspaceRoot}/dictionary.txt",
+            "description": "Words used in this project",
+            "scope": "workspace",
+            "addWords": true
+        },
+        "custom": true,
+        "internal-terms": false
+    }
+}
