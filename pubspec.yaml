@@ -1,5 +1,12 @@
 name: riddance_env
-version: 0.0.1
+version: 0.0.2
+description: For those about to write good code.
+topics:
+  - devenv
+  - environment
+  - riddance
+  - fltr
+  - opinionated
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
