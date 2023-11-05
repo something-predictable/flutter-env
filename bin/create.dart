@@ -1,4 +1,8 @@
+import 'dart:io';
+
+import 'package:riddance_env/pub.dart';
+
 void main(List<String> arguments) async {
-  // ignore: avoid_print
-  print('CREATING $arguments');
+  final path = Directory.current;
+  await makePubspecYaml(path, arguments);
 }

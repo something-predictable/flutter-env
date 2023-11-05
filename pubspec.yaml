@@ -1,15 +1,18 @@
 name: riddance_env
 version: 0.0.2
-description: For those about to write good code.
+description: Automate Flutter maintenance chores.
 topics:
   - devenv
-  - environment
   - riddance
-  - fltr
-  - opinionated
+  - codegen
+  - template
+  - build-runner
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  path: 1.8.3
 
 dev_dependencies:
   lints: 3.0.0
