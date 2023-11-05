@@ -6,7 +6,14 @@
         "**/*.lock": true,
         "LICENSE": true,
         "analysis_options.yaml": true,
-        "dictionary.txt": true
+        "dictionary.txt": true,
+        "flutter_create/android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java": true,
+        "flutter_create/android/gradle/wrapper/gradle-wrapper.jar": true,
+        "flutter_create/android/gradlew": true,
+        "flutter_create/android/gradlew.bat": true,
+        "flutter_create/android/local.properties": true,
+        "flutter_create/linux/flutter/generated_plugin*": true,
+        "flutter_create/windows/flutter/generated_plugin*": true
     },
     "dart.lineLength": 80,
     "[dart]": {
