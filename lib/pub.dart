@@ -8,7 +8,7 @@ String _content(
   String flutterVersion,
   String packageName,
   String appName,
-  String org,
+  String domain,
 ) =>
     '''
 name: $packageName
@@ -17,7 +17,9 @@ version: 0.0.1
 
 app:
   name: $appName
-  org: $org
+  domain: $domain
+  permissions:
+    - internet-client
 
 environment:
   flutter: $flutterVersion
@@ -33,13 +35,14 @@ dev_dependencies:
 ''';
 
 Future<void> makePubspecYaml(Directory path, List<String> arguments) async {
+  final packageName = basename(path.path);
   final pubspecFile = File('${path.path}${Platform.pathSeparator}pubspec.yaml')
     ..writeAsStringSync(
       _content(
         await _flutterVersion(),
-        basename(path.path),
-        _after('--app-name', arguments) ?? exit(0),
-        _after('--org', arguments) ?? exit(0),
+        packageName,
+        _after('--app-name', arguments) ?? _defaultName(packageName),
+        _reverse(_after('--org', arguments)) ?? 'example.com',
       ),
     );
   await _flutterExec(path, ['pub', 'add', 'dev:riddance_env']);
@@ -55,11 +58,17 @@ Future<void> makePubspecYaml(Directory path, List<String> arguments) async {
   await _flutterExec(path, ['pub', 'get']);
 }
 
+String _defaultName(String packageName) => packageName
+    .split('_')
+    .where((e) => e != 'flutter')
+    .map((e) => e.substring(0, 1).toUpperCase() + e.substring(1))
+    .join(' ');
+
+String? _reverse(String? org) => org?.split('.').reversed.join('.');
+
 String? _after(String parameter, List<String> arguments) {
   final ix = arguments.indexOf(parameter);
   if (ix == -1 || ix == arguments.length - 1) {
-    // ignore: avoid_print
-    print('Please specify the $parameter parameter');
     return null;
   }
   return arguments[ix + 1];
