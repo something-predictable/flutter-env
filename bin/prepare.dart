@@ -13,5 +13,8 @@ void main(List<String> arguments) async {
     print('Command must be run using the dart executable.');
     exit(1);
   }
-  await copyTemplate(Directory.current, templatePath);
+  await copyTemplate(Directory.current, templatePath, [
+    'flutter_create',
+    'overlay',
+  ]);
 }

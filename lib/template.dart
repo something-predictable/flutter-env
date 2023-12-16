@@ -1,10 +1,12 @@
 import 'dart:io';
 
-Future<void> copyTemplate(Directory target, Uri templatePath) async {
+Future<void> copyTemplate(
+    Directory target, Uri templatePath, List<String> templates) async {
   final directories = <String, Directory>{};
   final files = <String, File>{};
-  await _collect(templatePath, 'flutter_create', directories, files);
-  await _collect(templatePath, 'overlay', directories, files);
+  for (final template in templates) {
+    await _collect(templatePath, template, directories, files);
+  }
   for (final e in directories.entries) {
     Directory(target.path + Platform.pathSeparator + e.key).createSync();
   }
