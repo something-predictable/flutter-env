@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:riddance_env/git.dart' as git;
+import 'package:riddance_env/icons.dart';
 import 'package:riddance_env/pub.dart';
 import 'package:riddance_env/template.dart';
 
@@ -23,8 +24,11 @@ void main(List<String> arguments) async {
       ...flutterCreateFixes(package),
       ...app,
     });
-    await orderImports(path, app.keys);
-    await pubGet(path);
+    await Future.wait([
+      orderImports(path, app.keys),
+      pubGet(path),
+      createIcons(path, package.platforms),
+    ]);
   }
 
   git.init(path);

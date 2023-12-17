@@ -9,6 +9,7 @@
         "windows": true,
         "macos": true,
         "web": true,
+        "snap": true,
         ".*": true,
         "pubspec.lock": true,
         "analysis_options.yaml": true,
