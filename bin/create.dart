@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:isolate';
 
-import 'package:riddance_env/git.dart';
+import 'package:riddance_env/git.dart' as git;
 import 'package:riddance_env/pub.dart';
 import 'package:riddance_env/template.dart';
 
@@ -29,6 +29,13 @@ void main(List<String> arguments) async {
     );
     await orderImports(path, packageNameFixes.keys);
   }
-  init(path);
-  await addAndCommit(path, ['fltr', 'create', ...arguments].join(' '));
+
+  git.init(path);
+  await git.addAndCommit(path, ['fltr', 'create', ...arguments].join(' '));
+
+  await Process.run(
+    'code',
+    ['--goto', './lib/main.dart:15:41', '.'],
+    runInShell: true,
+  );
 }
