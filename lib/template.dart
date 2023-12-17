@@ -53,3 +53,24 @@ Future<void> _collect(
     };
   }
 }
+
+Future<void> orderImports(Directory path, Iterable<String> files) async {
+  await Future.wait(
+    files.map(
+      (file) => _dartExec(
+        path,
+        ['fix', '--apply', '--code=directives_ordering', file],
+      ),
+    ),
+  );
+}
+
+Future<void> _dartExec(Directory path, List<String> arguments) async {
+  final process = await Process.start(
+    'dart',
+    arguments,
+    workingDirectory: path.path,
+    runInShell: true,
+  );
+  await process.exitCode;
+}
