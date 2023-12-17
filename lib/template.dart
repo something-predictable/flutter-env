@@ -67,7 +67,8 @@ Future<void> _collect(
 Future<void> orderImports(Directory path, Iterable<String> files) async {
   await Future.wait(
     files.map(
-      (file) => _dartExec(
+      (file) => _exec(
+        'dart',
         path,
         ['fix', '--apply', '--code=directives_ordering', file],
       ),
@@ -76,12 +77,12 @@ Future<void> orderImports(Directory path, Iterable<String> files) async {
 }
 
 Future<void> pubGet(Directory path) async {
-  await _dartExec(path, ['pub', 'get', '--no-example']);
+  await _exec('flutter', path, ['pub', 'get', '--no-example']);
 }
 
-Future<void> _dartExec(Directory path, List<String> arguments) async {
+Future<void> _exec(String exe, Directory path, List<String> arguments) async {
   final process = await Process.start(
-    'dart',
+    exe,
     arguments,
     workingDirectory: path.path,
     runInShell: true,

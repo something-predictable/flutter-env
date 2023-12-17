@@ -2,13 +2,13 @@ import 'dart:io';
 
 import 'package:icons_launcher/cli_commands.dart';
 
-Future<void> createIcons(Directory path, List<String> platforms) async {
+void createIcons(Directory path, List<String> platforms) {
   if (!File('${path.path}${Platform.pathSeparator}icon.png').existsSync()) {
     return;
   }
   final work = Directory(
-      [path.path, '.dart_tool', 'riddance_env'].join(Platform.pathSeparator));
-  await work.create(recursive: true);
+    [path.path, '.dart_tool', 'riddance_env'].join(Platform.pathSeparator),
+  )..createSync(recursive: true);
   final configFile = '${work.path}${Platform.pathSeparator}icons_launcher.yaml';
   File(configFile).writeAsStringSync('''
 icons_launcher:

@@ -26,9 +26,11 @@ void main(List<String> arguments) async {
     flutterCreateFixes(pubspec),
   );
   await Future.wait([
-    if (pubspec != null) createIcons(path, pubspec.platforms),
     pubGet(path),
   ]);
+  if (pubspec != null) {
+    createIcons(path, pubspec.platforms);
+  }
 }
 
 Never _error(String message) {
