@@ -3,7 +3,7 @@ import 'package:flutter_create/state.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('Counter increments smoke test', (tester) async {
     final state = AppState();
     await tester.pumpWidget(App(state));
 
