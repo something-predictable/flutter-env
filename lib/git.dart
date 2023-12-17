@@ -37,3 +37,18 @@ ${config?.replaceAll('/%.git', '/${basename(path.path)}.git') ?? ''}[branch "mai
 }
 
 final _urlRegExp = RegExp(r'(url\s*=.*/)([^/]+)(\.git\n)');
+
+Future<void> addAndCommit(Directory path, String message) async {
+  await _gitExec(path, ['add', '.']);
+  await _gitExec(path, ['commit', '-m', message]);
+}
+
+Future<void> _gitExec(Directory path, List<String> arguments) async {
+  final process = await Process.start(
+    'git',
+    arguments,
+    workingDirectory: path.path,
+    runInShell: true,
+  );
+  await process.exitCode;
+}

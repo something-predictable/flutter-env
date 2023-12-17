@@ -13,6 +13,7 @@ void main(List<String> arguments) async {
   );
   if (templatePath != null) {
     await copyTemplate(path, templatePath, [
+      'overlay',
       'app',
     ], {
       'lib/main.dart': (contents) =>
@@ -22,4 +23,5 @@ void main(List<String> arguments) async {
     });
   }
   init(path);
+  await addAndCommit(path, ['fltr', 'create', ...arguments].join(' '));
 }
