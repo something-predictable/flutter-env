@@ -57,11 +57,16 @@ Map<String, String Function(String)> _flutterCreateFixes(
             'android:label="flutter_create"',
             'android:label="${package.appName.replaceAll('"', '&quot;')}"',
           )
-          .replaceAll(
+          .replaceAllIf(
+            network,
             '    <application',
-            network
-                ? '    <uses-permission android:name="android.permission.INTERNET"/>${Platform.lineTerminator}    <application'
-                : '    <application',
+            '    <uses-permission android:name="android.permission.INTERNET"/>${Platform.lineTerminator}    <application',
+          )
+          .replaceAllIf(
+            package.portrait,
+            '            android:configChanges="orientation|keyboardHid',
+            // ignore: lines_longer_than_80_chars
+            '            android:screenOrientation="portrait"${Platform.lineTerminator}            android:configChanges="keyboardHid',
           ),
       if (network)
         'android/app/src/debug/AndroidManifest.xml': (s) => s.replaceFirst(
@@ -81,6 +86,16 @@ Map<String, String Function(String)> _flutterCreateFixes(
           .replaceAll(
             '<string>flutter_create</string>',
             '<string>${package.appName.replaceAll('"', '&quot;')}</string>',
+          )
+          .replaceAllIf(
+            package.portrait,
+            '		<string>UIInterfaceOrientationLandscapeLeft</string>${Platform.lineTerminator}',
+            '',
+          )
+          .replaceAllIf(
+            package.portrait,
+            '		<string>UIInterfaceOrientationLandscapeRight</string>${Platform.lineTerminator}',
+            '',
           ),
       'ios/Runner.xcodeproj': (s) => s.replaceAll(
             'PRODUCT_BUNDLE_IDENTIFIER = com.example.riddance.flutterCreate',
@@ -91,9 +106,15 @@ Map<String, String Function(String)> _flutterCreateFixes(
             'set(APPLICATION_ID "com.example.riddance.flutter_create")',
             'set(APPLICATION_ID "$org.${package.name}")',
           ),
-      'linux/my_application.cc': (s) => s.replaceAll(
+      'linux/my_application.cc': (s) => s
+          .replaceAll(
             '"flutter_create"',
             '"${package.appName.replaceAll('"', r'\"')}")',
+          )
+          .replaceAllIf(
+            package.portrait,
+            'window, 1280, 720',
+            'window, 405, 720',
           ),
       // spell-checker: ignore xcconfig
       'macos/Runner/Configs/AppInfo.xcconfig': (s) => s
@@ -123,6 +144,13 @@ Map<String, String Function(String)> _flutterCreateFixes(
               '\t<key>com.apple.security.app-sandbox</key>',
               '\t<key>com.apple.security.app-sandbox</key>${Platform.lineTerminator}\t<true/>${Platform.lineTerminator}\t<key>com.apple.security.network.client</key>',
             ),
+      // spell-checker: ignore lproj
+      if (package.portrait)
+        'macos/Runner/Base.lproj/MainMenu.xib': (s) => s.replaceAll(
+              'width="800" height="600"',
+              'width="450" height="600"',
+            ),
+      // spell-checker: ignore xcodeproj pbxproj
       'macos/Runner.xcodeproj/project.pbxproj': (s) => s
           .replaceAll(
             'flutter_create.app',
@@ -181,9 +209,15 @@ Map<String, String Function(String)> _flutterCreateFixes(
             // ignore: lines_longer_than_80_chars
             'set(BINARY_NAME "${package.appName.replaceAll('"', r'\"').replaceAll(' ', '')}")',
           ),
-      'windows/runner/main.cpp': (s) => s.replaceAll(
+      'windows/runner/main.cpp': (s) => s
+          .replaceAll(
             'L"flutter_create"',
             'L"${package.appName.replaceAll('"', r'\"')}"',
+          )
+          .replaceAllIf(
+            package.portrait,
+            'size(1280, 720)',
+            'size(405, 720)',
           ),
       'windows/runner/Runner.rc': (s) => s
           .replaceAll(
@@ -209,3 +243,13 @@ Map<String, String Function(String)> _flutterCreateFixes(
             'VALUE "ProductName", "${package.appName.replaceAll('"', r'\"')}" "\\0"',
           ),
     };
+
+extension _StringEx on String {
+  // ignore: avoid_positional_boolean_parameters
+  String replaceAllIf(bool condition, String from, String replace) {
+    if (!condition) {
+      return this;
+    }
+    return replaceAll(from, replace);
+  }
+}
