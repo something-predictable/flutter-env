@@ -38,9 +38,10 @@ T? vote<T>(
   final top = [...grouped.entries]..sort((a, b) => b.value - a.value);
   if (top.length == 3) {
     final [first, second, third] = top;
-    if (first.value > 2 && second.value == 1 && third.value == 1) {
+    if (first.value > 3 && second.value == 2 && third.value == 1) {
       return first.key;
     }
+    return null;
   }
   final [first, second] = top;
   if (first.value > 2 && second.value == 1) {
