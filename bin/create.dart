@@ -24,6 +24,7 @@ void main(List<String> arguments) async {
       ...app,
     });
     await orderImports(path, app.keys);
+    await pubGet(path);
   }
 
   git.init(path);

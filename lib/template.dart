@@ -65,6 +65,10 @@ Future<void> orderImports(Directory path, Iterable<String> files) async {
   );
 }
 
+Future<void> pubGet(Directory path) async {
+  await _dartExec(path, ['pub', 'get', '--no-example']);
+}
+
 Future<void> _dartExec(Directory path, List<String> arguments) async {
   final process = await Process.start(
     'dart',
