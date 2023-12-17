@@ -1,7 +1,11 @@
 import 'dart:io';
 
 Future<void> copyTemplate(
-    Directory target, Uri templatePath, List<String> templates) async {
+  Directory target,
+  Uri templatePath,
+  List<String> templates,
+  Map<String, String Function(String)> replacer,
+) async {
   final directories = <String, Directory>{};
   final files = <String, File>{};
   for (final template in templates) {
@@ -11,8 +15,26 @@ Future<void> copyTemplate(
     Directory(target.path + Platform.pathSeparator + e.key).createSync();
   }
   for (final e in files.entries) {
-    await e.value.copy(target.path + Platform.pathSeparator + e.key);
+    final targetFile = target.path + Platform.pathSeparator + e.key;
+    if (_replace(e.key, e.value.path, targetFile, replacer)) {
+      continue;
+    }
+    await e.value.copy(targetFile);
   }
+}
+
+bool _replace(
+  String sourcePath,
+  String source,
+  String target,
+  Map<String, String Function(String)> replacer,
+) {
+  final r = replacer[sourcePath.replaceAll(Platform.pathSeparator, '/')];
+  if (r == null) {
+    return false;
+  }
+  File(target).writeAsStringSync(r(File(source).readAsStringSync()));
+  return true;
 }
 
 Future<void> _collect(

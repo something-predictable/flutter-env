@@ -34,28 +34,49 @@ dev_dependencies:
     sdk: flutter
 ''';
 
-Future<void> makePubspecYaml(Directory path, List<String> arguments) async {
+Future<PackageInfo> makePubspecYaml(
+  Directory path,
+  List<String> arguments,
+) async {
   final packageName = basename(path.path);
+  final appName = _after('--app-name', arguments) ?? _defaultName(packageName);
+  final domain = _reverse(_after('--org', arguments)) ?? 'example.com';
   final pubspecFile = File('${path.path}${Platform.pathSeparator}pubspec.yaml')
     ..writeAsStringSync(
-      _content(
-        await _flutterVersion(),
-        packageName,
-        _after('--app-name', arguments) ?? _defaultName(packageName),
-        _reverse(_after('--org', arguments)) ?? 'example.com',
-      ),
+      _content(await _flutterVersion(), packageName, appName, domain),
     );
   await _flutterExec(path, ['pub', 'add', 'dev:riddance_env']);
-  pubspecFile.writeAsStringSync(
-    pubspecFile.readAsStringSync().replaceAllMapped(
-          RegExp(r'  riddance_env: \^([0-9]+)\.([0-9]+)\.([0-9]+)'),
-          (m) => '  riddance_env: ${m.group(1)}.${m.group(2)}.${m.group(3)}',
-        ),
-  );
+  final myVersion = _freezeVersion(pubspecFile);
   try {
     File('${path.path}${Platform.pathSeparator}pubspec.lock').deleteSync();
   } on PathNotFoundException catch (_) {}
   await _flutterExec(path, ['pub', 'get']);
+  return PackageInfo(
+    packageName,
+    appName,
+    domain,
+    ['android', 'ios', 'linux', 'windows', 'macos', 'web'],
+    ['internet-client'],
+    myVersion,
+  );
+}
+
+final class PackageInfo {
+  const PackageInfo(
+    this.name,
+    this.appName,
+    this.domain,
+    this.platforms,
+    this.permissions,
+    this.myVersion,
+  );
+
+  final String name;
+  final String appName;
+  final String domain;
+  final List<String> platforms;
+  final List<String> permissions;
+  final String myVersion;
 }
 
 String _defaultName(String packageName) => packageName
@@ -65,6 +86,19 @@ String _defaultName(String packageName) => packageName
     .join(' ');
 
 String? _reverse(String? org) => org?.split('.').reversed.join('.');
+
+final _myVersionRegExp =
+    RegExp(r'  riddance_env: \^([0-9]+)\.([0-9]+)\.([0-9]+)');
+
+String _freezeVersion(File pubspecFile) {
+  final contents = pubspecFile.readAsStringSync();
+  final m = _myVersionRegExp.allMatches(contents).single;
+  final version = '${m.group(1)}.${m.group(2)}.${m.group(3)}';
+  final start = contents.substring(0, m.start);
+  final end = contents.substring(m.end);
+  pubspecFile.writeAsStringSync('$start  riddance_env: $version$end');
+  return version;
+}
 
 String? _after(String parameter, List<String> arguments) {
   final ix = arguments.indexOf(parameter);

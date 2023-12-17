@@ -7,12 +7,19 @@ import 'package:riddance_env/template.dart';
 
 void main(List<String> arguments) async {
   final path = Directory.current;
-  await makePubspecYaml(path, arguments);
+  final package = await makePubspecYaml(path, arguments);
   final templatePath = await Isolate.resolvePackageUri(
     Uri.parse('package:riddance_env/template/'),
   );
   if (templatePath != null) {
-    await copyTemplate(path, templatePath, ['app']);
+    await copyTemplate(path, templatePath, [
+      'app',
+    ], {
+      'lib/main.dart': (contents) =>
+          contents.replaceAll('flutter_create', package.name),
+      'test/smoke_test.dart': (contents) =>
+          contents.replaceAll('flutter_create', package.name),
+    });
   }
   init(path);
 }
