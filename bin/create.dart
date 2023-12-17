@@ -5,6 +5,8 @@ import 'package:riddance_env/git.dart' as git;
 import 'package:riddance_env/pub.dart';
 import 'package:riddance_env/template.dart';
 
+import 'prepare.dart';
+
 void main(List<String> arguments) async {
   final path = Directory.current;
   final package = await makePubspecYaml(path, arguments);
@@ -12,22 +14,16 @@ void main(List<String> arguments) async {
     Uri.parse('package:riddance_env/template/'),
   );
   if (templatePath != null) {
-    final packageNameFixes = <String, String Function(String)>{
-      'lib/main.dart': (contents) =>
-          contents.replaceAll('flutter_create', package.name),
-      'test/smoke_test.dart': (contents) =>
-          contents.replaceAll('flutter_create', package.name),
-    };
-    await copyTemplate(
-      path,
-      templatePath,
-      [
-        'overlay',
-        'app',
-      ],
-      packageNameFixes,
-    );
-    await orderImports(path, packageNameFixes.keys);
+    final app = packageNameFixes(package);
+    await copyTemplate(path, templatePath, [
+      'flutter_create',
+      'overlay',
+      'app',
+    ], {
+      ...flutterCreateFixes(package),
+      ...app,
+    });
+    await orderImports(path, app.keys);
   }
 
   git.init(path);
@@ -39,3 +35,10 @@ void main(List<String> arguments) async {
     runInShell: true,
   );
 }
+
+Map<String, String Function(String)> packageNameFixes(PackageInfo package) => {
+      'lib/main.dart': (contents) =>
+          contents.replaceAll('flutter_create', package.name),
+      'test/smoke_test.dart': (contents) =>
+          contents.replaceAll('flutter_create', package.name),
+    };
