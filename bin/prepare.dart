@@ -14,14 +14,15 @@ void main(List<String> arguments) async {
   if (templatePath == null) {
     _error('Command must be run using the dart executable.');
   }
+  final pubspec = await readPubspec(path);
   await copyTemplate(
     path,
     templatePath,
     [
-      'flutter_create',
-      'overlay',
+      if (pubspec != null) Template('flutter_create', pubspec.platforms),
+      const Template('overlay'),
     ],
-    flutterCreateFixes(await readPubspec(path)),
+    flutterCreateFixes(pubspec),
   );
   await pubGet(path);
 }

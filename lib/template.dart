@@ -1,9 +1,16 @@
 import 'dart:io';
 
+final class Template {
+  const Template(this.name, [this.onlyInclude]);
+
+  final String name;
+  final List<String>? onlyInclude;
+}
+
 Future<void> copyTemplate(
   Directory target,
   Uri templatePath,
-  List<String> templates,
+  List<Template> templates,
   Map<String, String Function(String)> replacer,
 ) async {
   final directories = <String, Directory>{};
@@ -39,13 +46,16 @@ bool _replace(
 
 Future<void> _collect(
   Uri templatePath,
-  String template,
+  Template template,
   Map<String, Directory> directories,
   Map<String, File> files,
 ) async {
-  final dir = Directory.fromUri(templatePath.resolve(template));
+  final dir = Directory.fromUri(templatePath.resolve(template.name));
   await for (final file in dir.list(recursive: true)) {
     final rel = file.path.substring(dir.path.length + 1);
+    if (template.onlyInclude?.any(rel.startsWith) == false) {
+      continue;
+    }
     final _ = switch (file) {
       (final Directory d) => directories[rel] = d,
       (final File f) => files[rel] = f,
