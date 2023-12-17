@@ -19,7 +19,7 @@ Future<void> copyTemplate(
     if (_replace(e.key, e.value.path, targetFile, replacer)) {
       continue;
     }
-    await e.value.copy(targetFile);
+    await e.value.copy(targetFile.replaceAll('_gitignore', '.gitignore'));
   }
 }
 
