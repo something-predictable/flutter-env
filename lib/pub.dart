@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart';
+import 'package:yaml/yaml.dart';
 
 String _content(
   String flutterVersion,
@@ -34,6 +35,8 @@ dev_dependencies:
     sdk: flutter
 ''';
 
+const _allPlatforms = ['android', 'ios', 'linux', 'windows', 'macos', 'web'];
+
 Future<PackageInfo> makePubspecYaml(
   Directory path,
   List<String> arguments,
@@ -55,17 +58,95 @@ Future<PackageInfo> makePubspecYaml(
     packageName,
     appName,
     domain,
-    ['android', 'ios', 'linux', 'windows', 'macos', 'web'],
+    null,
+    _allPlatforms,
     ['internet-client'],
     myVersion,
   );
 }
+
+Future<PackageInfo?> readPubspec(Directory path) async => switch (loadYaml(
+      await File('${path.path}${Platform.pathSeparator}pubspec.yaml')
+          .readAsString(),
+    )) {
+      (final YamlMap doc) => switch ((
+          doc['name'],
+          doc['description'],
+          doc['dev_dependencies'],
+          doc['app']
+        )) {
+          (
+            final String name,
+            final String? description,
+            final YamlMap deps,
+            final YamlMap app,
+          ) =>
+            switch ((
+              deps['riddance_env'],
+              app['name'],
+              app['domain'],
+              app['platforms'],
+              app['unsupported'],
+              app['permissions'],
+            )) {
+              (
+                final String myVersion,
+                final String appName,
+                final String domain,
+                final Object? platforms,
+                final Object? unsupported,
+                final Object? permissions,
+              ) =>
+                PackageInfo(
+                  name,
+                  appName,
+                  domain,
+                  description,
+                  switch ((platforms, unsupported)) {
+                    (final YamlList platforms, final YamlList unsupported) => [
+                        ...platforms
+                            .whereType<String>()
+                            .where((element) => !unsupported.contains(element)),
+                      ],
+                    (final YamlList platforms, final String unsupported) => [
+                        ...platforms
+                            .whereType<String>()
+                            .where((element) => element != unsupported),
+                      ],
+                    (null, final YamlList unsupported) => [
+                        ..._allPlatforms
+                            .where((element) => !unsupported.contains(element)),
+                      ],
+                    (null, final String unsupported) => [
+                        ..._allPlatforms
+                            .where((element) => element != unsupported),
+                      ],
+                    (final YamlList platforms, null) => [
+                        ...platforms.whereType<String>(),
+                      ],
+                    _ => _allPlatforms,
+                  },
+                  switch (permissions) {
+                    (final YamlList permissions) => [
+                        ...permissions.whereType<String>(),
+                      ],
+                    _ => [],
+                  },
+                  myVersion,
+                ),
+              _ => null,
+            },
+          _ => null,
+        },
+      _ => null,
+    };
 
 final class PackageInfo {
   const PackageInfo(
     this.name,
     this.appName,
     this.domain,
+    this.description,
     this.platforms,
     this.permissions,
     this.myVersion,
@@ -74,6 +155,7 @@ final class PackageInfo {
   final String name;
   final String appName;
   final String domain;
+  final String? description;
   final List<String> platforms;
   final List<String> permissions;
   final String myVersion;
