@@ -37,6 +37,7 @@ Map<String, String Function(String)> flutterCreateFixes(PackageInfo? package) =>
       (final PackageInfo package) => _flutterCreateFixes(
           package,
           package.domain.split('.').reversed.join('.'),
+          package.permissions.contains('internet-client'),
         ),
       null => {},
     };
@@ -44,16 +45,34 @@ Map<String, String Function(String)> flutterCreateFixes(PackageInfo? package) =>
 Map<String, String Function(String)> _flutterCreateFixes(
   PackageInfo package,
   String org,
+  bool network,
 ) =>
     {
       'android/app/build.gradle': (s) => s.replaceAll(
             'com.example.riddance.flutter_create',
             '$org.${package.name}',
           ),
-      'android/app/src/main/AndroidManifest.xml': (s) => s.replaceAll(
+      'android/app/src/main/AndroidManifest.xml': (s) => s
+          .replaceAll(
             'android:label="flutter_create"',
             'android:label="${package.appName.replaceAll('"', '&quot;')}"',
+          )
+          .replaceAll(
+            '    <application',
+            network
+                ? '    <uses-permission android:name="android.permission.INTERNET"/>${Platform.lineTerminator}    <application'
+                : '    <application',
           ),
+      if (network)
+        'android/app/src/debug/AndroidManifest.xml': (s) => s.replaceFirst(
+              '    <uses-permission android:name="android.permission.INTERNET"/>${Platform.lineTerminator}',
+              '',
+            ),
+      if (network)
+        'android/app/src/profile/AndroidManifest.xml': (s) => s.replaceFirst(
+              '    <uses-permission android:name="android.permission.INTERNET"/>${Platform.lineTerminator}',
+              '',
+            ),
       'ios/Runner/Info.plist': (s) => s
           .replaceAll(
             '<string>Flutter Create</string>',
@@ -94,7 +113,16 @@ Map<String, String Function(String)> _flutterCreateFixes(
             // ignore: lines_longer_than_80_chars
             'Copyright © ${DateTime.now().year} ${package.domain}. All rights reserved.',
           ),
-      // spell-checker: ignore xcodeproj pbxproj
+      if (network)
+        'macos/Runner/DebugProfile.entitlements': (s) => s.replaceAll(
+              '\t<key>com.apple.security.app-sandbox</key>',
+              '\t<key>com.apple.security.app-sandbox</key>${Platform.lineTerminator}\t<true/>${Platform.lineTerminator}\t<key>com.apple.security.network.client</key>',
+            ),
+      if (network)
+        'macos/Runner/Release.entitlements': (s) => s.replaceAll(
+              '\t<key>com.apple.security.app-sandbox</key>',
+              '\t<key>com.apple.security.app-sandbox</key>${Platform.lineTerminator}\t<true/>${Platform.lineTerminator}\t<key>com.apple.security.network.client</key>',
+            ),
       'macos/Runner.xcodeproj/project.pbxproj': (s) => s
           .replaceAll(
             'flutter_create.app',
