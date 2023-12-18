@@ -212,8 +212,8 @@ Future<String> _flutterVersion() async {
 
 Future<String> _flutterExec(Directory? path, List<String> arguments) async {
   final process = await Process.start(
-    'dart',
-    ['pub', 'global', 'run', 'fltr', ...arguments],
+    'flutter',
+    arguments,
     workingDirectory: path?.path,
     runInShell: true,
   );
