@@ -15,8 +15,19 @@ Future<void> copyTemplate(
 ) async {
   final directories = <String, Directory>{};
   final files = <String, File>{};
+  final remove = <String>[];
   for (final template in templates) {
-    await _collect(templatePath, template, directories, files);
+    await _collect(templatePath, template, directories, files, remove);
+  }
+  for (final rm in remove) {
+    final path = target.path + Platform.pathSeparator + rm;
+    // ignore: exhaustive_cases
+    switch (FileSystemEntity.typeSync(path)) {
+      case FileSystemEntityType.directory:
+        Directory(path).deleteSync(recursive: true);
+      case FileSystemEntityType.file:
+        File(path).deleteSync(recursive: true);
+    }
   }
   for (final e in directories.entries) {
     Directory(target.path + Platform.pathSeparator + e.key).createSync();
@@ -49,12 +60,18 @@ Future<void> _collect(
   Template template,
   Map<String, Directory> directories,
   Map<String, File> files,
+  List<String> remove,
 ) async {
   final dir = Directory.fromUri(templatePath.resolve(template.name));
+  final onlyInclude = template.onlyInclude;
   await for (final file in dir.list(recursive: true)) {
     final rel = _dotFile(_relative(dir.path, file.path));
-    if (template.onlyInclude?.any(rel.startsWith) == false) {
-      continue;
+    if (onlyInclude != null) {
+      final exclude = !onlyInclude.any(rel.startsWith);
+      if (exclude) {
+        remove.add(rel);
+        continue;
+      }
     }
 
     final _ = switch (file) {
