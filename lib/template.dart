@@ -26,7 +26,7 @@ Future<void> copyTemplate(
     if (_replace(e.key, e.value.path, targetFile, replacer)) {
       continue;
     }
-    await e.value.copy(targetFile.replaceAll('_gitignore', '.gitignore'));
+    await e.value.copy(targetFile);
   }
 }
 
@@ -52,16 +52,26 @@ Future<void> _collect(
 ) async {
   final dir = Directory.fromUri(templatePath.resolve(template.name));
   await for (final file in dir.list(recursive: true)) {
-    final rel = file.path.substring(dir.path.length + 1);
+    final rel = _dotFile(_relative(dir.path, file.path));
     if (template.onlyInclude?.any(rel.startsWith) == false) {
       continue;
     }
+
     final _ = switch (file) {
       (final Directory d) => directories[rel] = d,
       (final File f) => files[rel] = f,
       _ => null,
     };
   }
+}
+
+String _relative(String dir, String path) => path.substring(dir.length + 1);
+
+String _dotFile(String name) {
+  if (name.startsWith('__')) {
+    return '.${name.substring(2)}';
+  }
+  return name;
 }
 
 Future<void> orderImports(Directory path, Iterable<String> files) async {

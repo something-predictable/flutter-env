@@ -15,7 +15,7 @@
         "analysis_options.yaml": true,
         "*.iml": true,
         "build": true,
-        "lib/generated_plugin_registrant.dart": true,
+        "lib/generated_plugin_registrant.dart": true
     },
     "[dart]": {
         "editor.selectionHighlight": false,
