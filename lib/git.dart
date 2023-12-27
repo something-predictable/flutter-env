@@ -6,6 +6,9 @@ import 'package:riddance_env/siblings.dart';
 void init(Directory path) {
   final gitPath =
       '${path.path}${Platform.pathSeparator}.git${Platform.pathSeparator}';
+  if (Directory(gitPath).existsSync()) {
+    return;
+  }
   Directory('${gitPath}objects').createSync(recursive: true);
   Directory('${gitPath}refs').createSync(recursive: true);
   File('${gitPath}HEAD').writeAsStringSync('ref: refs/heads/main\n');
