@@ -32,7 +32,7 @@ void main(List<String> arguments) async {
   }
 
   git.init(path);
-  await git.addAndCommit(path, ['fltr', 'create', ...arguments].join(' '));
+  await git.addAndCommit(path, ['fltr', ...arguments].join(' '));
 
   await Process.run(
     'code',
