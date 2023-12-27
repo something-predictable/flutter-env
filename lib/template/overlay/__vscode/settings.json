@@ -28,5 +28,16 @@
         },
         "files.insertFinalNewline": true
     },
-    "yaml.format.singleQuote": true
+    "yaml.format.singleQuote": true,
+    "cSpell.customDictionaries": {
+        "project": {
+            "name": "project dictionary",
+            "path": "${workspaceRoot}/dictionary.txt",
+            "description": "Words used in this project",
+            "addWords": true
+        }
+    },
+    "cSpell.words": [
+        "unawaited"
+    ]
 }
