@@ -23,8 +23,8 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace "xyz.k15r.riddance.flutter"
-    compileSdkVersion flutter.compileSdkVersion
+    namespace "xyz.k15r.riddance.flutter_create"
+    compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
     compileOptions {
