@@ -54,9 +54,14 @@ Map<String, String Function(String)> _flutterCreateFixes(
   bool network,
 ) =>
     {
-      'android/app/build.gradle': (s) => s.replaceAll(
-            'com.example.riddance.flutter_create',
-            '$org.${package.name}',
+      'android/app/build.gradle': (s) => s
+          .replaceAll(
+            'namespace = "xyz.k15r.riddance.flutter_create"',
+            'namespace = "xyz.k15r.riddance.flutter"',
+          )
+          .replaceAll(
+            'applicationId = "com.example.riddance.flutter_create"',
+            'applicationId = "$org.${package.name}"',
           ),
       'android/app/src/main/AndroidManifest.xml': (s) => s
           .replaceAll(
@@ -213,12 +218,13 @@ Map<String, String Function(String)> _flutterCreateFixes(
           .replaceAll(
             'set(BINARY_NAME "flutter_create")',
             // ignore: lines_longer_than_80_chars
-            'set(BINARY_NAME "${package.appName.replaceAll('"', r'\"').replaceAll(' ', '')}")',
+            'set(BINARY_NAME "${package.appName.codeUnits.every((u) => u < 127) ? package.appName.replaceAll('"', '').replaceAll(' ', '') : package.name.split('_').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ')}")',
           ),
       'windows/runner/main.cpp': (s) => s
           .replaceAll(
-            'L"flutter_create"',
-            'L"${package.appName.replaceAll('"', r'\"')}"',
+            'window.Create(L"flutter_create", ',
+            // ignore: lines_longer_than_80_chars
+            'window.Create(L"${package.appName.replaceAll('"', r'\"').codeUnits.map((r) => r < 128 ? String.fromCharCode(r) : '\\u${r.toRadixString(16)}').join()}", ',
           )
           .replaceAllIf(
             package.portrait,
