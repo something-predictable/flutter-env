@@ -13,7 +13,7 @@
         "editor.formatOnPaste": true,
         "editor.selectionHighlight": false,
         "editor.codeActionsOnSave": {
-            "source.organizeImports": true
+            "source.organizeImports": "explicit"
         },
         "files.insertFinalNewline": true
     },
