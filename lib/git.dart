@@ -15,17 +15,18 @@ void init(Directory path) {
   final config = vote(
     path,
     '.git${Platform.pathSeparator}config',
-    (content) =>
-        // ignore: prefer_interpolation_to_compose_strings
-        '[' +
-        content
-            .split('[')
-            .where((element) => element.startsWith('remote "origin"]'))
-            .join('[')
-            .replaceAllMapped(
-              _urlRegExp,
-              (match) => '${match.group(1)}%${match.group(3)}',
-            ),
+    (content) {
+      final remotes = content
+          .split('[')
+          .where((element) => element.startsWith('remote "origin"]'));
+      if (remotes.isEmpty) {
+        return null;
+      }
+      return '[${remotes.join('[').replaceAllMapped(
+            _urlRegExp,
+            (match) => '${match.group(1)}%${match.group(3)}',
+          )}';
+    },
   );
   // spell-checker: ignore repositoryformatversion filemode logallrefupdates
   File('${gitPath}config').writeAsStringSync('''
