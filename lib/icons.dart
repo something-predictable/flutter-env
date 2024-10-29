@@ -29,5 +29,5 @@ icons_launcher:
     linux:
       enable: true
 ''');
-  createLauncherIcons(path: configFile);
+  createIconsLauncher(path: configFile);
 }
