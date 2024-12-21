@@ -16,14 +16,20 @@ void main(List<String> arguments) async {
   );
   if (templatePath != null) {
     final app = packageNameFixes(package);
-    await copyTemplate(path, templatePath, [
-      Template('flutter_create', package.platforms),
-      const Template('overlay'),
-      const Template('app'),
-    ], {
-      ...flutterCreateFixes(package),
-      ...app,
-    });
+    await copyTemplate(
+      path,
+      templatePath,
+      [
+        Template('flutter_create', package.platforms),
+        const Template('overlay'),
+        const Template('app'),
+      ],
+      {
+        ...flutterCreateFixes(package),
+        ...app,
+      },
+      [],
+    );
     await Future.wait([
       orderImports(path, app.keys),
       pubGet(path),

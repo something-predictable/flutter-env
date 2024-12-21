@@ -12,10 +12,10 @@ Future<void> copyTemplate(
   Uri templatePath,
   List<Template> templates,
   Map<String, String Function(String)> replacer,
+  List<String> remove,
 ) async {
   final directories = <String, Directory>{};
   final files = <String, File>{};
-  final remove = <String>[];
   for (final template in templates) {
     await _collect(templatePath, template, directories, files, remove);
   }

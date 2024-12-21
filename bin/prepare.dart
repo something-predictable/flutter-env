@@ -24,6 +24,7 @@ void main(List<String> arguments) async {
       const Template('overlay'),
     ],
     flutterCreateFixes(pubspec),
+    _legacyFiles,
   );
   await Future.wait([
     pubGet(path),
@@ -117,7 +118,7 @@ Map<String, String Function(String)> _flutterCreateFixes(
             'set(APPLICATION_ID "com.example.riddance.flutter_create")',
             'set(APPLICATION_ID "$org.${package.name}")',
           ),
-      'linux/my_application.cc': (s) => s
+      'linux/runner/my_application.cc': (s) => s
           .replaceAll(
             '"flutter_create"',
             '"${package.appName.replaceAll('"', r'\"')}")',
@@ -255,6 +256,12 @@ Map<String, String Function(String)> _flutterCreateFixes(
             'VALUE "ProductName", "${package.appName.replaceAll('"', r'\"')}" "\\0"',
           ),
     };
+
+const _legacyFiles = [
+  'linux/main.cc',
+  'linux/my_application.h',
+  'linux/my_application.cc',
+];
 
 extension _StringEx on String {
   // ignore: avoid_positional_boolean_parameters
