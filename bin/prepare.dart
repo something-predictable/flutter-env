@@ -252,6 +252,10 @@ Map<String, String Function(String)> _flutterCreateFixes(
             'VALUE "OriginalFilename", "${package.appName.replaceAll('"', r'\"').replaceAll(' ', '')}.exe" "\\0"',
           )
           .replaceAll(
+            r'VALUE "InternalName", "flutter_create.exe" "\0"',
+            'VALUE "InternalName", "${package.appName.replaceAll('"', r'\"').replaceAll(' ', '')}" "\\0"',
+          )
+          .replaceAll(
             r'VALUE "ProductName", "flutter_create" "\0"',
             'VALUE "ProductName", "${package.appName.replaceAll('"', r'\"')}" "\\0"',
           ),
