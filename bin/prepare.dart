@@ -243,7 +243,7 @@ Map<String, String Function(String)> _flutterCreateFixes(
           )
           .replaceAll(
             RegExp(
-              r'VALUE "LegalCopyright", "Copyright \(C\) [0-9]{4} com\.example\.riddance\. All rights reserved\." "\\0"',
+              r'VALUE "LegalCopyright", "Copyright \(C\) [0-9]{4} com\.example\.riddance\. All rights reserved\." "\0"',
             ),
             'VALUE "LegalCopyright", "Copyright © ${DateTime.now().year} ${package.domain.replaceAll('"', r'\"')}. All rights reserved." "\\0"',
           )
