@@ -1,0 +1,9 @@
+{
+    "id": "com.example.riddance.flutter_create",
+    "version": "1.0.0",
+    "vendor": "com.example.riddance",
+    "type": "web",
+    "main": "index.html",
+    "title": "flutter_create",
+    "icon": "icon.png"
+}

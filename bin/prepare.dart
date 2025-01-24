@@ -211,6 +211,27 @@ Map<String, String Function(String)> _flutterCreateFixes(
               _ => '',
             },
           ),
+      'webos/index.html': (s) => s.replaceAll(
+            '<title>flutter_create</title>',
+            '<title>${package.appName.replaceAll('<', '&lt;')}</title>',
+          ),
+      'webos/appinfo.json': (s) => s
+          .replaceAll(
+            'id": "com.example.riddance.flutter_create"',
+            'id": "$org.${package.name}"',
+          )
+          .replaceAll(
+            'version": "1.0.0"',
+            'version": "${package.appVersion}"',
+          )
+          .replaceAll(
+            'vendor": "com.example.riddance"',
+            'vendor": "${package.domain.replaceAll('"', r'\"')}"',
+          )
+          .replaceAll(
+            'title": "flutter_create"',
+            'title": "${package.appName.replaceAll('"', r'\"')}"',
+          ),
       'windows/CMakeLists.txt': (s) => s
           .replaceAll(
             'project(flutter_create LANGUAGES CXX)',

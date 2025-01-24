@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>flutter_create</title>
+</head>
+
+<body>
+  <script>
+    {{flutter_js}}
+
+    {{flutter_build_config}}
+
+    (() => {
+      const originalFetch = window.fetch;
+      window.fetch = function (url, options) {
+        if (url.startsWith('https://')) {
+          return originalFetch(url, options)
+        }
+        return new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.onload = function () {
+            resolve(new Response(xhr.responseText, {
+              status: xhr.status,
+            }));
+          }
+          xhr.onerror = function () {
+            reject(new Error(`XMLHttpRequest to ${url} failed`));
+          };
+          xhr.open(options?.method || 'GET', url, true);
+          xhr.send();
+        });
+      };
+    })();
+
+    _flutter.loader.load({
+      onEntrypointLoaded: async function (engineInitializer) {
+        const appRunner = await engineInitializer.initializeEngine({
+          renderer: 'canvaskit',
+          canvasKitVariant: 'chromium',
+        });
+        await appRunner.runApp();
+      },
+    });
+  </script>
+</body>
+
+</html>

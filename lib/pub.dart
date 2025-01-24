@@ -57,6 +57,7 @@ Future<PackageInfo> makePubspecYaml(
   return PackageInfo(
     packageName,
     appName,
+    '0.0.1',
     domain,
     null,
     false,
@@ -85,6 +86,7 @@ Future<PackageInfo?> readPubspec(Directory path) async => switch (loadYaml(
             switch ((
               deps['riddance_env'],
               app['name'],
+              app['version'],
               app['domain'],
               app['orientation'],
               app['platforms'],
@@ -94,6 +96,7 @@ Future<PackageInfo?> readPubspec(Directory path) async => switch (loadYaml(
               (
                 final String myVersion,
                 final String appName,
+                final String appVersion,
                 final String domain,
                 final String? orientation,
                 final Object? platforms,
@@ -103,6 +106,7 @@ Future<PackageInfo?> readPubspec(Directory path) async => switch (loadYaml(
                 PackageInfo(
                   name,
                   appName,
+                  appVersion,
                   domain,
                   description,
                   orientation == 'portrait',
@@ -149,6 +153,7 @@ final class PackageInfo {
   const PackageInfo(
     this.name,
     this.appName,
+    this.appVersion,
     this.domain,
     this.description,
     // ignore: avoid_positional_boolean_parameters
@@ -160,6 +165,7 @@ final class PackageInfo {
 
   final String name;
   final String appName;
+  final String appVersion;
   final String domain;
   final String? description;
   final bool portrait;
