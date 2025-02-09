@@ -9,7 +9,7 @@ topics:
   - build-runner
 
 environment:
-  sdk: ^3.6.1
+  sdk: ^3.6.2
 
 dependencies:
   icons_launcher: 3.0.0
