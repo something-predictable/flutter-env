@@ -34,4 +34,5 @@ analysis_options.yaml
 /windows
 /macos
 /web
+/webos
 /snap

@@ -9,6 +9,7 @@
         "windows": true,
         "macos": true,
         "web": true,
+        "webos": true,
         "snap": true,
         ".*": true,
         "pubspec.lock": true,
