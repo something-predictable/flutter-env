@@ -12,7 +12,7 @@ String _content(
   String domain,
 ) => '''
 name: $packageName
-publish_to: 'none'
+publish_to: none
 version: 0.0.1
 
 app:
