@@ -37,7 +37,7 @@ Future<void> copyTemplate(
     if (_replace(e.key, e.value.path, targetFile, replacer)) {
       continue;
     }
-    await e.value.copy(targetFile);
+    await _copyMutable(e.value, targetFile);
   }
 }
 
@@ -89,6 +89,13 @@ String _dotFile(String name) {
     return '.${name.substring(2)}';
   }
   return name;
+}
+
+Future<File> _copyMutable(File source, String targetPath) async {
+  if (((source.statSync().mode & 0xFFF) >> 6) & 0x2 == 0x2) {
+    return source.copy(targetPath);
+  }
+  return File(targetPath).writeAsBytes(await source.readAsBytes());
 }
 
 Future<void> orderImports(Directory path, Iterable<String> files) async {
