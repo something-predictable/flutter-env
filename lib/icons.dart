@@ -30,4 +30,16 @@ icons_launcher:
       enable: true
 ''');
   createIconsLauncher(path: configFile);
+  final freedesktopPath = [
+    path.path,
+    'linux',
+    'freedesktop',
+  ].join(Platform.pathSeparator);
+  Directory(freedesktopPath).createSync(recursive: true);
+  File(
+    [path.path, 'snap', 'gui', 'app_icon.png'].join(Platform.pathSeparator),
+  ).renameSync('$freedesktopPath${Platform.pathSeparator}app_icon.png');
+  Directory(
+    '${path.path}${Platform.pathSeparator}snap',
+  ).deleteSync(recursive: true);
 }
