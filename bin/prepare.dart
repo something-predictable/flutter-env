@@ -118,15 +118,20 @@ Map<String, String Function(String)> _flutterCreateFixes(
         'PRODUCT_BUNDLE_IDENTIFIER = $org.${package.appName.replaceAll(' ', '')}',
       ),
   'linux/CMakeLists.txt':
-      (s) => s.replaceAll(
-        'set(APPLICATION_ID "com.example.riddance.flutter_create")',
-        'set(APPLICATION_ID "$org.${package.name}")',
-      ),
+      (s) => s
+          .replaceAll(
+            'set(BINARY_NAME "flutter_create")',
+            'set(BINARY_NAME "${package.name}")',
+          )
+          .replaceAll(
+            'set(APPLICATION_ID "com.example.riddance.flutter_create")',
+            'set(APPLICATION_ID "$org.${package.name}")',
+          ),
   'linux/runner/my_application.cc':
       (s) => s
           .replaceAll(
-            '"flutter_create"',
-            '"${package.appName.replaceAll('"', r'\"')}")',
+            ', "flutter_create")',
+            ', "${package.appName.replaceAll('"', r'\"')}")',
           )
           .replaceAllIf(
             package.portrait,
