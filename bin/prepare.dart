@@ -29,6 +29,7 @@ void main(List<String> arguments) async {
   await Future.wait([pubGet(path)]);
   if (pubspec != null) {
     createIcons(path, pubspec.platforms);
+    _createDesktop(path, pubspec);
   }
 }
 
@@ -293,6 +294,28 @@ Map<String, String Function(String)> _flutterCreateFixes(
             'VALUE "ProductName", "${package.appName.replaceAll('"', r'\"')}" "\\0"',
           ),
 };
+
+void _createDesktop(Directory path, PackageInfo package) {
+  File(
+    [
+      path.path,
+      'linux',
+      'freedesktop',
+      '${package.domain.split('.').reversed.join('.')}.${package.name}.desktop',
+    ].join(Platform.pathSeparator),
+  ).writeAsStringSync(
+    [
+      '[Desktop Entry]',
+      'Name=${package.appName}',
+      'Type=Application',
+      'Terminal=false',
+      if (package.description != null) 'Comment=${package.description}',
+      'Exec=${package.name}',
+      'Icon=app_icon.png',
+      if (package.topics.isNotEmpty) 'Categories=${package.topics.join(';')};',
+    ].join('\n'),
+  );
+}
 
 const _legacyFiles = [
   'android/settings.gradle',

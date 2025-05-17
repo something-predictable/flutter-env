@@ -59,6 +59,7 @@ Future<PackageInfo> makePubspecYaml(
     '0.0.1',
     domain,
     null,
+    [],
     false,
     _allPlatforms,
     ['internet-client'],
@@ -75,6 +76,7 @@ Future<PackageInfo?> readPubspec(Directory path) async => switch (loadYaml(
     doc['name'],
     doc['version'],
     doc['description'],
+    doc['topics'],
     doc['dev_dependencies'],
     doc['app'],
   )) {
@@ -82,6 +84,7 @@ Future<PackageInfo?> readPubspec(Directory path) async => switch (loadYaml(
       final String name,
       final String version,
       final String? description,
+      final YamlList? topics,
       final YamlMap deps,
       final YamlMap app,
     ) =>
@@ -109,6 +112,7 @@ Future<PackageInfo?> readPubspec(Directory path) async => switch (loadYaml(
             version,
             domain,
             description,
+            topics?.whereType<String>().toList() ?? [],
             orientation == 'portrait',
             switch ((platforms, unsupported)) {
               (final YamlList platforms, final YamlList unsupported) => [
@@ -156,6 +160,7 @@ final class PackageInfo {
     this.appVersion,
     this.domain,
     this.description,
+    this.topics,
     // ignore: avoid_positional_boolean_parameters
     this.portrait,
     this.platforms,
@@ -168,6 +173,7 @@ final class PackageInfo {
   final String appVersion;
   final String domain;
   final String? description;
+  final List<String> topics;
   final bool portrait;
   final List<String> platforms;
   final List<String> permissions;
