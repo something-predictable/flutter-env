@@ -73,12 +73,14 @@ Future<PackageInfo?> readPubspec(Directory path) async => switch (loadYaml(
 )) {
   (final YamlMap doc) => switch ((
     doc['name'],
+    doc['version'],
     doc['description'],
     doc['dev_dependencies'],
     doc['app'],
   )) {
     (
       final String name,
+      final String version,
       final String? description,
       final YamlMap deps,
       final YamlMap app,
@@ -86,7 +88,6 @@ Future<PackageInfo?> readPubspec(Directory path) async => switch (loadYaml(
       switch ((
         deps['riddance_env'],
         app['name'],
-        app['version'],
         app['domain'],
         app['orientation'],
         app['platforms'],
@@ -96,7 +97,6 @@ Future<PackageInfo?> readPubspec(Directory path) async => switch (loadYaml(
         (
           final String myVersion,
           final String appName,
-          final String appVersion,
           final String domain,
           final String? orientation,
           final Object? platforms,
@@ -106,7 +106,7 @@ Future<PackageInfo?> readPubspec(Directory path) async => switch (loadYaml(
           PackageInfo(
             name,
             appName,
-            appVersion,
+            version,
             domain,
             description,
             orientation == 'portrait',
