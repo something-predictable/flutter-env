@@ -94,11 +94,12 @@ String _dotFile(String name) {
 Future<void> orderImports(Directory path, Iterable<String> files) async {
   await Future.wait(
     files.map(
-      (file) => _exec(
-        'dart',
-        path,
-        ['fix', '--apply', '--code=directives_ordering', file],
-      ),
+      (file) => _exec('dart', path, [
+        'fix',
+        '--apply',
+        '--code=directives_ordering',
+        file,
+      ]),
     ),
   );
 }

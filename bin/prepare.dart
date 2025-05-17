@@ -26,9 +26,7 @@ void main(List<String> arguments) async {
     flutterCreateFixes(pubspec),
     _legacyFiles,
   );
-  await Future.wait([
-    pubGet(path),
-  ]);
+  await Future.wait([pubGet(path)]);
   if (pubspec != null) {
     createIcons(path, pubspec.platforms);
   }
@@ -42,10 +40,10 @@ Never _error(String message) {
 Map<String, String Function(String)> flutterCreateFixes(PackageInfo? package) =>
     switch (package) {
       (final PackageInfo package) => _flutterCreateFixes(
-          package,
-          package.domain.split('.').reversed.join('.'),
-          package.permissions.contains('internet-client'),
-        ),
+        package,
+        package.domain.split('.').reversed.join('.'),
+        package.permissions.contains('internet-client'),
+      ),
       null => {},
     };
 
@@ -53,9 +51,9 @@ Map<String, String Function(String)> _flutterCreateFixes(
   PackageInfo package,
   String org,
   bool network,
-) =>
-    {
-      'android/app/build.gradle': (s) => s
+) => {
+  'android/app/build.gradle.kts':
+      (s) => s
           .replaceAll(
             'namespace = "xyz.k15r.riddance.flutter_create"',
             'namespace = "xyz.k15r.riddance.flutter"',
@@ -64,7 +62,8 @@ Map<String, String Function(String)> _flutterCreateFixes(
             'applicationId = "com.example.riddance.flutter_create"',
             'applicationId = "$org.${package.name}"',
           ),
-      'android/app/src/main/AndroidManifest.xml': (s) => s
+  'android/app/src/main/AndroidManifest.xml':
+      (s) => s
           .replaceAll(
             'android:label="flutter_create"',
             'android:label="${package.appName.replaceAll('"', '&quot;')}"',
@@ -80,17 +79,20 @@ Map<String, String Function(String)> _flutterCreateFixes(
             // ignore: lines_longer_than_80_chars
             '            android:screenOrientation="portrait"${Platform.lineTerminator}            android:configChanges="keyboardHid',
           ),
-      if (network)
-        'android/app/src/debug/AndroidManifest.xml': (s) => s.replaceFirst(
-              '    <uses-permission android:name="android.permission.INTERNET"/>${Platform.lineTerminator}',
-              '',
-            ),
-      if (network)
-        'android/app/src/profile/AndroidManifest.xml': (s) => s.replaceFirst(
-              '    <uses-permission android:name="android.permission.INTERNET"/>${Platform.lineTerminator}',
-              '',
-            ),
-      'ios/Runner/Info.plist': (s) => s
+  if (network)
+    'android/app/src/debug/AndroidManifest.xml':
+        (s) => s.replaceFirst(
+          '    <uses-permission android:name="android.permission.INTERNET"/>${Platform.lineTerminator}',
+          '',
+        ),
+  if (network)
+    'android/app/src/profile/AndroidManifest.xml':
+        (s) => s.replaceFirst(
+          '    <uses-permission android:name="android.permission.INTERNET"/>${Platform.lineTerminator}',
+          '',
+        ),
+  'ios/Runner/Info.plist':
+      (s) => s
           .replaceAll(
             '<string>Flutter Create</string>',
             '<string>${package.appName.replaceAll('"', '&quot;')}</string>',
@@ -109,16 +111,19 @@ Map<String, String Function(String)> _flutterCreateFixes(
             '		<string>UIInterfaceOrientationLandscapeRight</string>${Platform.lineTerminator}',
             '',
           ),
-      'ios/Runner.xcodeproj': (s) => s.replaceAll(
-            'PRODUCT_BUNDLE_IDENTIFIER = com.example.riddance.flutterCreate',
-            // ignore: lines_longer_than_80_chars
-            'PRODUCT_BUNDLE_IDENTIFIER = $org.${package.appName.replaceAll(' ', '')}',
-          ),
-      'linux/CMakeLists.txt': (s) => s.replaceAll(
-            'set(APPLICATION_ID "com.example.riddance.flutter_create")',
-            'set(APPLICATION_ID "$org.${package.name}")',
-          ),
-      'linux/runner/my_application.cc': (s) => s
+  'ios/Runner.xcodeproj':
+      (s) => s.replaceAll(
+        'PRODUCT_BUNDLE_IDENTIFIER = com.example.riddance.flutterCreate',
+        // ignore: lines_longer_than_80_chars
+        'PRODUCT_BUNDLE_IDENTIFIER = $org.${package.appName.replaceAll(' ', '')}',
+      ),
+  'linux/CMakeLists.txt':
+      (s) => s.replaceAll(
+        'set(APPLICATION_ID "com.example.riddance.flutter_create")',
+        'set(APPLICATION_ID "$org.${package.name}")',
+      ),
+  'linux/runner/my_application.cc':
+      (s) => s
           .replaceAll(
             '"flutter_create"',
             '"${package.appName.replaceAll('"', r'\"')}")',
@@ -128,8 +133,9 @@ Map<String, String Function(String)> _flutterCreateFixes(
             'window, 1280, 720',
             'window, 405, 720',
           ),
-      // spell-checker: ignore xcconfig
-      'macos/Runner/Configs/AppInfo.xcconfig': (s) => s
+  // spell-checker: ignore xcconfig
+  'macos/Runner/Configs/AppInfo.xcconfig':
+      (s) => s
           .replaceAll(
             'PRODUCT_NAME = flutter_create',
             'PRODUCT_NAME = ${package.appName}',
@@ -146,40 +152,42 @@ Map<String, String Function(String)> _flutterCreateFixes(
             // ignore: lines_longer_than_80_chars
             'Copyright © ${DateTime.now().year} ${package.domain}. All rights reserved.',
           ),
-      if (network)
-        'macos/Runner/DebugProfile.entitlements': (s) => s.replaceAll(
-              '\t<key>com.apple.security.app-sandbox</key>',
-              '\t<key>com.apple.security.app-sandbox</key>${Platform.lineTerminator}\t<true/>${Platform.lineTerminator}\t<key>com.apple.security.network.client</key>',
-            ),
-      if (network)
-        'macos/Runner/Release.entitlements': (s) => s.replaceAll(
-              '\t<key>com.apple.security.app-sandbox</key>',
-              '\t<key>com.apple.security.app-sandbox</key>${Platform.lineTerminator}\t<true/>${Platform.lineTerminator}\t<key>com.apple.security.network.client</key>',
-            ),
-      // spell-checker: ignore lproj
-      if (package.portrait)
-        'macos/Runner/Base.lproj/MainMenu.xib': (s) => s.replaceAll(
-              'width="800" height="600"',
-              'width="450" height="600"',
-            ),
-      // spell-checker: ignore xcodeproj pbxproj
-      'macos/Runner.xcodeproj/project.pbxproj': (s) => s
-          .replaceAll(
-            'flutter_create.app',
-            '${package.appName}.app',
-          )
+  if (network)
+    'macos/Runner/DebugProfile.entitlements':
+        (s) => s.replaceAll(
+          '\t<key>com.apple.security.app-sandbox</key>',
+          '\t<key>com.apple.security.app-sandbox</key>${Platform.lineTerminator}\t<true/>${Platform.lineTerminator}\t<key>com.apple.security.network.client</key>',
+        ),
+  if (network)
+    'macos/Runner/Release.entitlements':
+        (s) => s.replaceAll(
+          '\t<key>com.apple.security.app-sandbox</key>',
+          '\t<key>com.apple.security.app-sandbox</key>${Platform.lineTerminator}\t<true/>${Platform.lineTerminator}\t<key>com.apple.security.network.client</key>',
+        ),
+  // spell-checker: ignore lproj
+  if (package.portrait)
+    'macos/Runner/Base.lproj/MainMenu.xib':
+        (s) => s.replaceAll(
+          'width="800" height="600"',
+          'width="450" height="600"',
+        ),
+  // spell-checker: ignore xcodeproj pbxproj
+  'macos/Runner.xcodeproj/project.pbxproj':
+      (s) => s
+          .replaceAll('flutter_create.app', '${package.appName}.app')
           .replaceAll(
             'PRODUCT_BUNDLE_IDENTIFIER = com.example.riddance.flutterCreate',
             // ignore: lines_longer_than_80_chars
             'PRODUCT_BUNDLE_IDENTIFIER = $org.${package.appName.replaceAll(' ', '')}',
           ),
-      // spell-checker: ignore xcshareddata xcscheme xcschemes
-      'macos/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme': (s) =>
-          s.replaceAll(
-            'flutter_create.app',
-            '${package.appName.replaceAll('"', '&quot;')}.app',
-          ),
-      'web/index.html': (s) => s
+  // spell-checker: ignore xcshareddata xcscheme xcschemes
+  'macos/Runner.xcodeproj/xcshareddata/xcschemes/Runner.xcscheme':
+      (s) => s.replaceAll(
+        'flutter_create.app',
+        '${package.appName.replaceAll('"', '&quot;')}.app',
+      ),
+  'web/index.html':
+      (s) => s
           .replaceAll(
             '<title>flutter_create</title>',
             '<title>${package.appName.replaceAll('<', '&lt;')}</title>',
@@ -198,7 +206,8 @@ Map<String, String Function(String)> _flutterCreateFixes(
               _ => '',
             },
           ),
-      'web/manifest.json': (s) => s
+  'web/manifest.json':
+      (s) => s
           .replaceAll(
             '"flutter_create"',
             '"${package.appName.replaceAll('"', r'\"')}"',
@@ -211,19 +220,18 @@ Map<String, String Function(String)> _flutterCreateFixes(
               _ => '',
             },
           ),
-      'webos/index.html': (s) => s.replaceAll(
-            '<title>flutter_create</title>',
-            '<title>${package.appName.replaceAll('<', '&lt;')}</title>',
-          ),
-      'webos/appinfo.json': (s) => s
+  'webos/index.html':
+      (s) => s.replaceAll(
+        '<title>flutter_create</title>',
+        '<title>${package.appName.replaceAll('<', '&lt;')}</title>',
+      ),
+  'webos/appinfo.json':
+      (s) => s
           .replaceAll(
             'id": "com.example.riddance.flutter_create"',
             'id": "$org.${package.name}"',
           )
-          .replaceAll(
-            'version": "1.0.0"',
-            'version": "${package.appVersion}"',
-          )
+          .replaceAll('version": "1.0.0"', 'version": "${package.appVersion}"')
           .replaceAll(
             'vendor": "com.example.riddance"',
             'vendor": "${package.domain.replaceAll('"', r'\"')}"',
@@ -232,7 +240,8 @@ Map<String, String Function(String)> _flutterCreateFixes(
             'title": "flutter_create"',
             'title": "${package.appName.replaceAll('"', r'\"')}"',
           ),
-      'windows/CMakeLists.txt': (s) => s
+  'windows/CMakeLists.txt':
+      (s) => s
           .replaceAll(
             'project(flutter_create LANGUAGES CXX)',
             'project(${package.name} LANGUAGES CXX)',
@@ -242,18 +251,16 @@ Map<String, String Function(String)> _flutterCreateFixes(
             // ignore: lines_longer_than_80_chars
             'set(BINARY_NAME "${package.appName.codeUnits.every((u) => u < 127) ? package.appName.replaceAll('"', '').replaceAll(' ', '') : package.name.split('_').map((w) => w[0].toUpperCase() + w.substring(1)).join(' ')}")',
           ),
-      'windows/runner/main.cpp': (s) => s
+  'windows/runner/main.cpp':
+      (s) => s
           .replaceAll(
             'window.Create(L"flutter_create", ',
             // ignore: lines_longer_than_80_chars
             'window.Create(L"${package.appName.replaceAll('"', r'\"').codeUnits.map((r) => r < 128 ? String.fromCharCode(r) : '\\u${r.toRadixString(16)}').join()}", ',
           )
-          .replaceAllIf(
-            package.portrait,
-            'size(1280, 720)',
-            'size(405, 720)',
-          ),
-      'windows/runner/Runner.rc': (s) => s
+          .replaceAllIf(package.portrait, 'size(1280, 720)', 'size(405, 720)'),
+  'windows/runner/Runner.rc':
+      (s) => s
           .replaceAll(
             r'VALUE "CompanyName", "com.example.riddance" "\0"',
             'VALUE "CompanyName", "${package.domain.replaceAll('"', r'\"')}" "\\0"',
@@ -280,9 +287,12 @@ Map<String, String Function(String)> _flutterCreateFixes(
             r'VALUE "ProductName", "flutter_create" "\0"',
             'VALUE "ProductName", "${package.appName.replaceAll('"', r'\"')}" "\\0"',
           ),
-    };
+};
 
 const _legacyFiles = [
+  'android/settings.gradle',
+  'android/build.gradle',
+  'android/app/build.gradle',
   'linux/main.cc',
   'linux/my_application.h',
   'linux/my_application.cc',

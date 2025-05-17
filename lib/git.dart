@@ -12,22 +12,21 @@ void init(Directory path) {
   Directory('${gitPath}objects').createSync(recursive: true);
   Directory('${gitPath}refs').createSync(recursive: true);
   File('${gitPath}HEAD').writeAsStringSync('ref: refs/heads/main\n');
-  final config = vote(
-    path,
-    '.git${Platform.pathSeparator}config',
-    (content) {
-      final remotes = content
-          .split('[')
-          .where((element) => element.startsWith('remote "origin"]'));
-      if (remotes.isEmpty) {
-        return null;
-      }
-      return '[${remotes.join('[').replaceAllMapped(
-            _urlRegExp,
-            (match) => '${match.group(1)}%${match.group(3)}',
-          )}';
-    },
-  );
+  final config = vote(path, '.git${Platform.pathSeparator}config', (content) {
+    final remotes = content
+        .split('[')
+        .where((element) => element.startsWith('remote "origin"]'));
+    if (remotes.isEmpty) {
+      return null;
+    }
+    final replacement = remotes
+        .join('[')
+        .replaceAllMapped(
+          _urlRegExp,
+          (match) => '${match.group(1)}%${match.group(3)}',
+        );
+    return '[$replacement';
+  });
   // spell-checker: ignore repositoryformatversion filemode logallrefupdates
   File('${gitPath}config').writeAsStringSync('''
 [core]

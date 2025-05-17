@@ -10,8 +10,7 @@ String _content(
   String packageName,
   String appName,
   String domain,
-) =>
-    '''
+) => '''
 name: $packageName
 publish_to: 'none'
 version: 0.0.1
@@ -24,7 +23,7 @@ app:
 
 environment:
   flutter: $flutterVersion
-  sdk: ^3.6.2
+  sdk: ^3.7.0
 
 dependencies:
   flutter:
@@ -68,86 +67,87 @@ Future<PackageInfo> makePubspecYaml(
 }
 
 Future<PackageInfo?> readPubspec(Directory path) async => switch (loadYaml(
-      await File('${path.path}${Platform.pathSeparator}pubspec.yaml')
-          .readAsString(),
-    )) {
-      (final YamlMap doc) => switch ((
-          doc['name'],
-          doc['description'],
-          doc['dev_dependencies'],
-          doc['app']
-        )) {
-          (
-            final String name,
-            final String? description,
-            final YamlMap deps,
-            final YamlMap app,
-          ) =>
-            switch ((
-              deps['riddance_env'],
-              app['name'],
-              app['version'],
-              app['domain'],
-              app['orientation'],
-              app['platforms'],
-              app['unsupported'],
-              app['permissions'],
-            )) {
-              (
-                final String myVersion,
-                final String appName,
-                final String appVersion,
-                final String domain,
-                final String? orientation,
-                final Object? platforms,
-                final Object? unsupported,
-                final Object? permissions,
-              ) =>
-                PackageInfo(
-                  name,
-                  appName,
-                  appVersion,
-                  domain,
-                  description,
-                  orientation == 'portrait',
-                  switch ((platforms, unsupported)) {
-                    (final YamlList platforms, final YamlList unsupported) => [
-                        ...platforms
-                            .whereType<String>()
-                            .where((element) => !unsupported.contains(element)),
-                      ],
-                    (final YamlList platforms, final String unsupported) => [
-                        ...platforms
-                            .whereType<String>()
-                            .where((element) => element != unsupported),
-                      ],
-                    (null, final YamlList unsupported) => [
-                        ..._allPlatforms
-                            .where((element) => !unsupported.contains(element)),
-                      ],
-                    (null, final String unsupported) => [
-                        ..._allPlatforms
-                            .where((element) => element != unsupported),
-                      ],
-                    (final YamlList platforms, null) => [
-                        ...platforms.whereType<String>(),
-                      ],
-                    _ => _allPlatforms,
-                  },
-                  switch (permissions) {
-                    (final YamlList permissions) => [
-                        ...permissions.whereType<String>(),
-                      ],
-                    _ => [],
-                  },
-                  myVersion,
+  await File(
+    '${path.path}${Platform.pathSeparator}pubspec.yaml',
+  ).readAsString(),
+)) {
+  (final YamlMap doc) => switch ((
+    doc['name'],
+    doc['description'],
+    doc['dev_dependencies'],
+    doc['app'],
+  )) {
+    (
+      final String name,
+      final String? description,
+      final YamlMap deps,
+      final YamlMap app,
+    ) =>
+      switch ((
+        deps['riddance_env'],
+        app['name'],
+        app['version'],
+        app['domain'],
+        app['orientation'],
+        app['platforms'],
+        app['unsupported'],
+        app['permissions'],
+      )) {
+        (
+          final String myVersion,
+          final String appName,
+          final String appVersion,
+          final String domain,
+          final String? orientation,
+          final Object? platforms,
+          final Object? unsupported,
+          final Object? permissions,
+        ) =>
+          PackageInfo(
+            name,
+            appName,
+            appVersion,
+            domain,
+            description,
+            orientation == 'portrait',
+            switch ((platforms, unsupported)) {
+              (final YamlList platforms, final YamlList unsupported) => [
+                ...platforms.whereType<String>().where(
+                  (element) => !unsupported.contains(element),
                 ),
-              _ => null,
+              ],
+              (final YamlList platforms, final String unsupported) => [
+                ...platforms.whereType<String>().where(
+                  (element) => element != unsupported,
+                ),
+              ],
+              (null, final YamlList unsupported) => [
+                ..._allPlatforms.where(
+                  (element) => !unsupported.contains(element),
+                ),
+              ],
+              (null, final String unsupported) => [
+                ..._allPlatforms.where((element) => element != unsupported),
+              ],
+              (final YamlList platforms, null) => [
+                ...platforms.whereType<String>(),
+              ],
+              _ => _allPlatforms,
             },
-          _ => null,
-        },
-      _ => null,
-    };
+            switch (permissions) {
+              (final YamlList permissions) => [
+                ...permissions.whereType<String>(),
+              ],
+              _ => [],
+            },
+            myVersion,
+          ),
+        _ => null,
+      },
+    _ => null,
+  },
+  _ => null,
+};
 
 final class PackageInfo {
   const PackageInfo(
@@ -182,8 +182,9 @@ String _defaultName(String packageName) => packageName
 
 String? _reverse(String? org) => org?.split('.').reversed.join('.');
 
-final _myVersionRegExp =
-    RegExp(r'  riddance_env: \^([0-9]+)\.([0-9]+)\.([0-9]+)');
+final _myVersionRegExp = RegExp(
+  r'  riddance_env: \^([0-9]+)\.([0-9]+)\.([0-9]+)',
+);
 
 String _freezeVersion(File pubspecFile) {
   final contents = pubspecFile.readAsStringSync();

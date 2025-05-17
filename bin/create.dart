@@ -24,32 +24,26 @@ void main(List<String> arguments) async {
         const Template('overlay'),
         const Template('app'),
       ],
-      {
-        ...flutterCreateFixes(package),
-        ...app,
-      },
+      {...flutterCreateFixes(package), ...app},
       [],
     );
-    await Future.wait([
-      orderImports(path, app.keys),
-      pubGet(path),
-    ]);
+    await Future.wait([orderImports(path, app.keys), pubGet(path)]);
     createIcons(path, package.platforms);
   }
 
   git.init(path);
   await git.addAndCommit(path, ['fltr', ...arguments].join(' '));
 
-  await Process.run(
-    'code',
-    ['--goto', './lib/main.dart:15:41', '.'],
-    runInShell: true,
-  );
+  await Process.run('code', [
+    '--goto',
+    './lib/main.dart:15:41',
+    '.',
+  ], runInShell: true);
 }
 
 Map<String, String Function(String)> packageNameFixes(PackageInfo package) => {
-      'lib/main.dart': (contents) =>
-          contents.replaceAll('flutter_create', package.name),
-      'test/smoke_test.dart': (contents) =>
-          contents.replaceAll('flutter_create', package.name),
-    };
+  'lib/main.dart':
+      (contents) => contents.replaceAll('flutter_create', package.name),
+  'test/smoke_test.dart':
+      (contents) => contents.replaceAll('flutter_create', package.name),
+};

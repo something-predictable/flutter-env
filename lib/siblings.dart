@@ -2,11 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart';
 
-T? vote<T>(
-  Directory path,
-  String file,
-  T Function(String content) extract,
-) {
+T? vote<T>(Directory path, String file, T Function(String content) extract) {
   final parent = dirname(path.path);
   final grouped = Directory(parent)
       .listSync()
@@ -16,19 +12,21 @@ T? vote<T>(
             element.statSync().type == FileSystemEntityType.directory,
       )
       .map((e) {
-    try {
-      return extract(File(joinAll([e.path, file])).readAsStringSync());
-    } on FileSystemException catch (_) {
-      return null;
-    }
-  }).fold(
-    <T, int>{},
-    (previousValue, element) => switch (element) {
-      null => previousValue,
-      final T element => previousValue
-        ..update(element, (value) => value + 1, ifAbsent: () => 1)
-    },
-  );
+        try {
+          return extract(File(joinAll([e.path, file])).readAsStringSync());
+        } on FileSystemException catch (_) {
+          return null;
+        }
+      })
+      .fold(
+        <T, int>{},
+        (previousValue, element) => switch (element) {
+          null => previousValue,
+          final T element =>
+            previousValue
+              ..update(element, (value) => value + 1, ifAbsent: () => 1),
+        },
+      );
   if (grouped.length == 1) {
     return grouped.keys.first;
   }

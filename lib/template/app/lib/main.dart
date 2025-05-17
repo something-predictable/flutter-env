@@ -13,14 +13,15 @@ final class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => WidgetsApp(
-        color: const Color(0xFFFF9000),
-        textStyle: const TextStyle(fontSize: 32),
-        builder: (_, __) => Stack(
+    color: const Color(0xFFFF9000),
+    textStyle: const TextStyle(fontSize: 32),
+    builder:
+        (_, _) => Stack(
           children: [
             Center(
               child: ValueListenableBuilder(
                 valueListenable: _state.count,
-                builder: (_, count, __) => Text(count.toString()),
+                builder: (_, count, _) => Text(count.toString()),
               ),
             ),
             Positioned(
@@ -38,5 +39,5 @@ final class App extends StatelessWidget {
             ),
           ],
         ),
-      );
+  );
 }
