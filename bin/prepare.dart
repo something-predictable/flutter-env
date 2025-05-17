@@ -24,7 +24,7 @@ void main(List<String> arguments) async {
       const Template('overlay'),
     ],
     flutterCreateFixes(pubspec),
-    _legacyFiles,
+    [..._legacyFiles],
   );
   await Future.wait([pubGet(path)]);
   if (pubspec != null) {
