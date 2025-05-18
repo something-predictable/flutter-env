@@ -298,12 +298,29 @@ Map<String, String Function(String)> _flutterCreateFixes(
 };
 
 void _createDesktop(Directory path, PackageInfo package) {
+  final name =
+      '${package.domain.split('.').reversed.join('.')}.${package.name}';
   File(
     [
       path.path,
       'linux',
       'freedesktop',
-      '${package.domain.split('.').reversed.join('.')}.${package.name}.desktop',
+      'app_icon.png',
+    ].join(Platform.pathSeparator),
+  ).renameSync(
+    [
+      path.path,
+      'linux',
+      'freedesktop',
+      '$name.png',
+    ].join(Platform.pathSeparator),
+  );
+  File(
+    [
+      path.path,
+      'linux',
+      'freedesktop',
+      '$name.desktop',
     ].join(Platform.pathSeparator),
   ).writeAsStringSync(
     [
@@ -313,7 +330,7 @@ void _createDesktop(Directory path, PackageInfo package) {
       'Terminal=false',
       if (package.description != null) 'Comment=${package.description}',
       'Exec=${package.name}',
-      'Icon=app_icon.png',
+      'Icon=$name',
       if (package.topics.isNotEmpty) 'Categories=${package.topics.join(';')};',
     ].join('\n'),
   );
