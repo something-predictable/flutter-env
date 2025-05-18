@@ -34,7 +34,15 @@ dev_dependencies:
     sdk: flutter
 ''';
 
-const _allPlatforms = ['android', 'ios', 'linux', 'windows', 'macos', 'web'];
+const _allPlatforms = [
+  'android',
+  'ios',
+  'linux',
+  'windows',
+  'macos',
+  'web',
+  'webos',
+];
 
 Future<PackageInfo> makePubspecYaml(
   Directory path,
@@ -79,6 +87,7 @@ Future<PackageInfo?> readPubspec(Directory path) async => switch (loadYaml(
     doc['topics'],
     doc['dev_dependencies'],
     doc['app'],
+    doc['platforms'],
   )) {
     (
       final String name,
@@ -87,13 +96,13 @@ Future<PackageInfo?> readPubspec(Directory path) async => switch (loadYaml(
       final YamlList? topics,
       final YamlMap deps,
       final YamlMap app,
+      final Object? platforms,
     ) =>
       switch ((
         deps['riddance_env'],
         app['name'],
         app['domain'],
         app['orientation'],
-        app['platforms'],
         app['unsupported'],
         app['permissions'],
       )) {
@@ -102,7 +111,6 @@ Future<PackageInfo?> readPubspec(Directory path) async => switch (loadYaml(
           final String appName,
           final String domain,
           final String? orientation,
-          final Object? platforms,
           final Object? unsupported,
           final Object? permissions,
         ) =>
@@ -120,8 +128,18 @@ Future<PackageInfo?> readPubspec(Directory path) async => switch (loadYaml(
                   (element) => !unsupported.contains(element),
                 ),
               ],
+              (final YamlMap platforms, final YamlList unsupported) => [
+                ...platforms.keys.whereType<String>().where(
+                  (element) => !unsupported.contains(element),
+                ),
+              ],
               (final YamlList platforms, final String unsupported) => [
                 ...platforms.whereType<String>().where(
+                  (element) => element != unsupported,
+                ),
+              ],
+              (final YamlMap platforms, final String unsupported) => [
+                ...platforms.keys.whereType<String>().where(
                   (element) => element != unsupported,
                 ),
               ],
@@ -135,6 +153,9 @@ Future<PackageInfo?> readPubspec(Directory path) async => switch (loadYaml(
               ],
               (final YamlList platforms, null) => [
                 ...platforms.whereType<String>(),
+              ],
+              (final YamlMap platforms, null) => [
+                ...platforms.keys.whereType<String>(),
               ],
               _ => _allPlatforms,
             },
@@ -176,6 +197,8 @@ final class PackageInfo {
   final List<String> topics;
   final bool portrait;
   final List<String> platforms;
+  List<String> get unsupported =>
+      _allPlatforms.where((p) => !platforms.contains(p)).toList();
   final List<String> permissions;
   final String myVersion;
 }

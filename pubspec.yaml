@@ -1,5 +1,5 @@
 name: riddance_env
-version: 0.0.18
+version: 0.0.19
 description: Automate Flutter maintenance chores.
 topics:
   - devenv

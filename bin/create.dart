@@ -26,6 +26,7 @@ void main(List<String> arguments) async {
       ],
       {...flutterCreateFixes(package), ...app},
       [],
+      [],
     );
     await Future.wait([orderImports(path, app.keys), pubGet(path)]);
     createIcons(path, package.platforms);

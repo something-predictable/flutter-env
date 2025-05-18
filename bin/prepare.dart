@@ -24,6 +24,7 @@ void main(List<String> arguments) async {
       const Template('overlay'),
     ],
     flutterCreateFixes(pubspec),
+    pubspec?.unsupported ?? [],
     [..._legacyFiles],
   );
   if (!arguments.contains('--no-pub')) {
@@ -298,6 +299,9 @@ Map<String, String Function(String)> _flutterCreateFixes(
 };
 
 void _createDesktop(Directory path, PackageInfo package) {
+  if (!package.platforms.contains('linux')) {
+    return;
+  }
   final name =
       '${package.domain.split('.').reversed.join('.')}.${package.name}';
   File(

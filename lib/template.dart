@@ -12,12 +12,20 @@ Future<void> copyTemplate(
   Uri templatePath,
   List<Template> templates,
   Map<String, String Function(String)> replacer,
+  List<String> unsupportedPlatforms,
   List<String> remove,
 ) async {
   final directories = <String, Directory>{};
   final files = <String, File>{};
   for (final template in templates) {
-    await _collect(templatePath, template, directories, files, remove);
+    await _collect(
+      templatePath,
+      template,
+      directories,
+      files,
+      unsupportedPlatforms,
+      remove,
+    );
   }
   for (final rm in remove) {
     final path = target.path + Platform.pathSeparator + rm;
@@ -38,6 +46,13 @@ Future<void> copyTemplate(
       continue;
     }
     await _copyMutable(e.value, targetFile);
+  }
+  for (final rm in unsupportedPlatforms) {
+    try {
+      Directory(
+        target.path + Platform.pathSeparator + rm,
+      ).deleteSync(recursive: true);
+    } on PathNotFoundException catch (_) {}
   }
 }
 
@@ -60,12 +75,16 @@ Future<void> _collect(
   Template template,
   Map<String, Directory> directories,
   Map<String, File> files,
+  List<String> unsupportedPlatforms,
   List<String> remove,
 ) async {
   final dir = Directory.fromUri(templatePath.resolve(template.name));
   final onlyInclude = template.onlyInclude;
   await for (final file in dir.list(recursive: true)) {
     final rel = _dotFile(_relative(dir.path, file.path));
+    if (unsupportedPlatforms.any((p) => rel.startsWith('$p/'))) {
+      continue;
+    }
     if (onlyInclude != null) {
       final exclude = !onlyInclude.any(rel.startsWith);
       if (exclude) {

@@ -14,32 +14,41 @@ void createIcons(Directory path, List<String> platforms) {
 icons_launcher:
   image_path: icon.png
   platforms:
+${[if (platforms.contains('android')) '''
     android:
       enable: true
       adaptive_foreground_image: icon.png
       adaptive_background_color: '#000000'
+''', if (platforms.contains('ios')) '''
     ios:
       enable: true
+''', if (platforms.contains('web')) '''
     web:
       enable: true
+''', if (platforms.contains('macos')) '''
     macos:
       enable: true
+''', if (platforms.contains('windows')) '''
     windows:
       enable: true
+''', if (platforms.contains('linux')) '''
     linux:
       enable: true
+'''].join()}
 ''');
   createIconsLauncher(path: configFile);
-  final freedesktopPath = [
-    path.path,
-    'linux',
-    'freedesktop',
-  ].join(Platform.pathSeparator);
-  Directory(freedesktopPath).createSync(recursive: true);
-  File(
-    [path.path, 'snap', 'gui', 'app_icon.png'].join(Platform.pathSeparator),
-  ).renameSync('$freedesktopPath${Platform.pathSeparator}app_icon.png');
-  Directory(
-    '${path.path}${Platform.pathSeparator}snap',
-  ).deleteSync(recursive: true);
+  if (platforms.contains('linux')) {
+    final freedesktopPath = [
+      path.path,
+      'linux',
+      'freedesktop',
+    ].join(Platform.pathSeparator);
+    Directory(freedesktopPath).createSync(recursive: true);
+    File(
+      [path.path, 'snap', 'gui', 'app_icon.png'].join(Platform.pathSeparator),
+    ).renameSync('$freedesktopPath${Platform.pathSeparator}app_icon.png');
+    Directory(
+      '${path.path}${Platform.pathSeparator}snap',
+    ).deleteSync(recursive: true);
+  }
 }
