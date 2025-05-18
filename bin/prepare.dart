@@ -26,7 +26,9 @@ void main(List<String> arguments) async {
     flutterCreateFixes(pubspec),
     [..._legacyFiles],
   );
-  await Future.wait([pubGet(path)]);
+  if (!arguments.contains('--no-pub')) {
+    await pubGet(path);
+  }
   if (pubspec != null) {
     createIcons(path, pubspec.platforms);
     _createDesktop(path, pubspec);
