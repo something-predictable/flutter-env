@@ -43,8 +43,8 @@ void main(List<String> arguments) async {
 }
 
 Map<String, String Function(String)> packageNameFixes(PackageInfo package) => {
-  'lib/main.dart':
-      (contents) => contents.replaceAll('flutter_create', package.name),
-  'test/smoke_test.dart':
-      (contents) => contents.replaceAll('flutter_create', package.name),
+  'lib/main.dart': (contents) =>
+      contents.replaceAll('flutter_create', package.name),
+  'test/smoke_test.dart': (contents) =>
+      contents.replaceAll('flutter_create', package.name),
 };

@@ -10,7 +10,8 @@ String _content(
   String packageName,
   String appName,
   String domain,
-) => '''
+) =>
+    '''
 name: $packageName
 publish_to: none
 version: 0.0.1
@@ -23,7 +24,7 @@ app:
 
 environment:
   flutter: $flutterVersion
-  sdk: ^3.7.0
+  sdk: ^3.8.0
 
 dependencies:
   flutter:
