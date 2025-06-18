@@ -1,5 +1,5 @@
 name: riddance_env
-version: 0.0.20
+version: 0.0.21
 description: Automate Flutter maintenance chores.
 topics:
   - devenv
@@ -9,7 +9,7 @@ topics:
   - build-runner
 
 environment:
-  sdk: ^3.8.0
+  sdk: ^3.8.1
 
 dependencies:
   icons_launcher: 3.0.1
