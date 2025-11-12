@@ -24,7 +24,7 @@ app:
 
 environment:
   flutter: $flutterVersion
-  sdk: ^3.8.1
+  sdk: ^3.9.2
 
 dependencies:
   flutter:
