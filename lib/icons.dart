@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:icons_launcher/cli_commands.dart';
 
-void createIcons(Directory path, List<String> platforms) {
+void createIcons(Directory path, String name, List<String> platforms) {
   if (!File('${path.path}${Platform.pathSeparator}icon.png').existsSync()) {
     return;
   }
@@ -45,7 +45,7 @@ ${[if (platforms.contains('android')) '''
     ].join(Platform.pathSeparator);
     Directory(freedesktopPath).createSync(recursive: true);
     File(
-      [path.path, 'snap', 'gui', 'app_icon.png'].join(Platform.pathSeparator),
+      [path.path, 'snap', 'gui', '$name.png'].join(Platform.pathSeparator),
     ).renameSync('$freedesktopPath${Platform.pathSeparator}app_icon.png');
     Directory(
       '${path.path}${Platform.pathSeparator}snap',

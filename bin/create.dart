@@ -29,7 +29,7 @@ void main(List<String> arguments) async {
       [],
     );
     await Future.wait([orderImports(path, app.keys), pubGet(path)]);
-    createIcons(path, package.platforms);
+    createIcons(path, package.name, package.platforms);
   }
 
   git.init(path);

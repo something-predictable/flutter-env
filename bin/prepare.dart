@@ -31,7 +31,7 @@ void main(List<String> arguments) async {
     await pubGet(path);
   }
   if (pubspec != null) {
-    createIcons(path, pubspec.platforms);
+    createIcons(path, pubspec.name, pubspec.platforms);
     _createDesktop(path, pubspec);
   }
 }
