@@ -47,6 +47,7 @@ Map<String, String Function(String)> flutterCreateFixes(PackageInfo? package) =>
         package,
         package.domain.split('.').reversed.join('.'),
         package.permissions.contains('internet-client'),
+        package.permissions.contains('exec'),
       ),
       null => {},
     };
@@ -55,6 +56,7 @@ Map<String, String Function(String)> _flutterCreateFixes(
   PackageInfo package,
   String org,
   bool network,
+  bool exec,
 ) => {
   'android/app/build.gradle.kts': (s) => s
       .replaceAll(
@@ -147,15 +149,15 @@ Map<String, String Function(String)> _flutterCreateFixes(
         // ignore: lines_longer_than_80_chars
         'Copyright © ${DateTime.now().year} ${package.domain}. All rights reserved.',
       ),
-  if (network)
-    'macos/Runner/DebugProfile.entitlements': (s) => s.replaceAll(
-      '\t<key>com.apple.security.app-sandbox</key>',
-      '\t<key>com.apple.security.app-sandbox</key>${Platform.lineTerminator}\t<true/>${Platform.lineTerminator}\t<key>com.apple.security.network.client</key>',
+  if (network || exec)
+    'macos/Runner/Release.entitlements': macEntitlementFix(
+      network: network,
+      exec: exec,
     ),
-  if (network)
-    'macos/Runner/Release.entitlements': (s) => s.replaceAll(
-      '\t<key>com.apple.security.app-sandbox</key>',
-      '\t<key>com.apple.security.app-sandbox</key>${Platform.lineTerminator}\t<true/>${Platform.lineTerminator}\t<key>com.apple.security.network.client</key>',
+  if (network || exec)
+    'macos/Runner/Release.entitlements': macEntitlementFix(
+      network: network,
+      exec: exec,
     ),
   // spell-checker: ignore lproj
   if (package.portrait)
@@ -270,6 +272,22 @@ Map<String, String Function(String)> _flutterCreateFixes(
         'VALUE "ProductName", "${package.appName.replaceAll('"', r'\"')}" "\\0"',
       ),
 };
+String Function(String) macEntitlementFix({
+  required bool network,
+  required bool exec,
+}) =>
+    (s) => s
+        .replaceAllIf(
+          network,
+          '\t<key>com.apple.security.app-sandbox</key>',
+          '\t<key>com.apple.security.app-sandbox</key>${Platform.lineTerminator}\t<true/>${Platform.lineTerminator}\t<key>com.apple.security.network.client</key>',
+        )
+        .replaceAllIf(
+          exec,
+          '\t<key>com.apple.security.app-sandbox</key>${Platform.lineTerminator}\t<true/>',
+          // spell-checker: ignore sbpl
+          '\t<key>com.apple.security.app-sandbox</key>${Platform.lineTerminator}\t<true/>${Platform.lineTerminator}\t<key>com.apple.security.temporary-exception-sbpl</key>${Platform.lineTerminator}\t<array>${Platform.lineTerminator}\t\t<string>(allow process-exec*)</string>${Platform.lineTerminator}\t</array>',
+        );
 
 void _createDesktop(Directory path, PackageInfo package) {
   if (!package.platforms.contains('linux')) {
