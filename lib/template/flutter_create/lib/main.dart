@@ -13,18 +13,18 @@ final class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => WidgetsApp(
-        color: const Color(0xFFFF9000),
-        builder: (_, __) => Column(
-          children: [
-            ValueListenableBuilder(
-              valueListenable: _state.count,
-              builder: (_, count, __) => Text(count.toString()),
-            ),
-            GestureDetector(
-              onTap: _state.increment,
-              child: const SizedBox.square(dimension: 48, child: Text('+')),
-            ),
-          ],
+    color: const Color(0xFFFF9000),
+    builder: (_, __) => Column(
+      children: [
+        ValueListenableBuilder(
+          valueListenable: _state.count,
+          builder: (_, count, __) => Text(count.toString()),
         ),
-      );
+        GestureDetector(
+          onTap: _state.increment,
+          child: const SizedBox.square(dimension: 48, child: Text('+')),
+        ),
+      ],
+    ),
+  );
 }
