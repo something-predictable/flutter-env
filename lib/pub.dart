@@ -24,7 +24,7 @@ app:
 
 environment:
   flutter: $flutterVersion
-  sdk: ^3.12.2
+  sdk: ^3.13.3
 
 dependencies:
   flutter:
@@ -77,9 +77,8 @@ Future<PackageInfo> makePubspecYaml(
 }
 
 Future<PackageInfo?> readPubspec(Directory path) async => switch (loadYaml(
-  await File(
-    '${path.path}${Platform.pathSeparator}pubspec.yaml',
-  ).readAsString(),
+  await File('${path.path}${Platform.pathSeparator}pubspec.yaml')
+      .readAsString(),
 )) {
   (final YamlMap doc) => switch ((
     doc['name'],

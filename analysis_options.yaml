@@ -2,4 +2,11 @@ include: ./lib/lints.yaml
 
 analyzer:
   exclude:
-    - 'lib/template/'
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
+    - lib/template/
