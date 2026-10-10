@@ -44,11 +44,9 @@ ${[if (platforms.contains('android')) '''
       'freedesktop',
     ].join(Platform.pathSeparator);
     Directory(freedesktopPath).createSync(recursive: true);
-    File(
-      [path.path, 'snap', 'gui', '$name.png'].join(Platform.pathSeparator),
-    ).renameSync('$freedesktopPath${Platform.pathSeparator}app_icon.png');
-    Directory(
-      '${path.path}${Platform.pathSeparator}snap',
-    ).deleteSync(recursive: true);
+    File([path.path, 'snap', 'gui', '$name.png'].join(Platform.pathSeparator))
+        .renameSync('$freedesktopPath${Platform.pathSeparator}app_icon.png');
+    Directory('${path.path}${Platform.pathSeparator}snap')
+        .deleteSync(recursive: true);
   }
 }

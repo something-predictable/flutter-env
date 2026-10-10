@@ -49,9 +49,8 @@ Future<void> copyTemplate(
   }
   for (final rm in unsupportedPlatforms) {
     try {
-      Directory(
-        target.path + Platform.pathSeparator + rm,
-      ).deleteSync(recursive: true);
+      Directory(target.path + Platform.pathSeparator + rm)
+          .deleteSync(recursive: true);
     } on PathNotFoundException catch (_) {}
   }
 }
